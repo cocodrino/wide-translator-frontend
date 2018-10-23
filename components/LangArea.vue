@@ -9,6 +9,7 @@
           
       div.uk-width-1-1.uk-margin-top
         div.uk-margin
+          button.hidden(v-shortkey="['ctrl', 'space']" @shortkey="clearText" @click="clearText") clear text
           textarea.uk-textarea.transparent-form.transparent-area(rows="5",
             ref="fromArea" @focus="forceFocus()" 
             v-model="fromText" @keydown.tab="keymonitor")
@@ -114,6 +115,10 @@ export default {
     },
     updatePronunciation(to) {
       this.$store.commit("updateProununciation", { to });
+    },
+    clearText(){
+      //throw "buscame"
+      this.fromText = ""
     }
   }
 };
@@ -168,6 +173,10 @@ export default {
 .activo{
   background-color: #563e1a !important;
 }
+
+.hidden{
+  display : none;
+  }
 </style>
 
 

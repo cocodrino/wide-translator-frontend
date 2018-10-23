@@ -1,15 +1,19 @@
 <template lang="pug">
   .content
-    vk-navbar(class="uk-nav", transparent=true)
-      vk-navbar-nav-item(class="uk-active" title="translator")
     .container
       img(src="/logo.png" id="logo")
       blockquote#quote
         | "temporary available site showing a proof of concept about a translator with pronunciator and keyboard shortcuts" 
-        a(href="/blah") more info
+        a(href="/about") more info
       vk-grid
         LangArea(side="from")
         LangArea(side="to")
+      div.leyenda
+        div shortcuts:
+        span.uk-display-block
+        | press tab for toggle between text areas
+        span.uk-display-block
+        | press ctrl+space for clear text area
 </template>
 
 
@@ -69,8 +73,14 @@ export default {
     border-color: #55d6fd;
 }
 
+.leyenda{
+  color: #ffa726;
+  font-size: 13px;
+}
+
 .transparent-form option {
   color: #55d6fd;
   background-color white ;
 }
+
 </style>

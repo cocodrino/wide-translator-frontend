@@ -1,7 +1,7 @@
 const pkg = require('./package')
 
 module.exports = {
-  mode: 'universal',
+  mode: 'spa',
 
   /*
   ** Headers of the page
@@ -34,7 +34,8 @@ module.exports = {
   ** Plugins to load before mounting the App
   */
   plugins: [
-    '~/plugins/vuikit.js'
+    '~/plugins/vuikit.js',
+    '~/plugins/shortkey.js',
   ],
 
   /*
