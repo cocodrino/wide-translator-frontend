@@ -1,39 +1,40 @@
 <template lang="pug">
     div(class="uk-width-1-2@m")
       div(class="uk-flex uk-flex-center") 
-        //button(@click="changeFocus") change focus
-        p.lang LANG: 
-        div.uk-form-control
-          select.uk-select.transparent-form(@change="changeLang" v-model="selectedInner")
-            option(v-for="option in langs" :selected="option.text == selectedLang" :value="option.value") {{option.text}}
-          
+        LanguageInput(v-bind:selectedLang="selectedLang",v-bind:side="side")  
       div.uk-width-1-1.uk-margin-top
         div.uk-margin
           button.hidden(v-shortkey="['ctrl', 'space']" @shortkey="clearText" @click="clearText") clear text
           textarea.uk-textarea.transparent-form.transparent-area(rows="5",
             ref="fromArea" @focus="forceFocus()" 
-            v-model="fromText" @keydown.tab="keymonitor")
-          div.pronounce-box(v-if="selectedInner=='ENG'")
-            span.pr-text
-            | algun texto acá
-            .uk-flex.uk-flex-right.uk-flex-middle.pronounce-buttoms
-              div.label pronunciation
-              .uk-button-group
-                button.uk-button.ukbutton-small.pronounce-buttom(
-                  @click="updatePronunciation('IPA')" 
-                  v-bind:class="{ 'activo':  pronunciationType == 'IPA' }" 
-                  :active="pronunciationType=='IPA'") IPA
-                button.uk-button.ukbutton-small.pronounce-buttom(
-                  @click="updatePronunciation('simple')" 
-                  v-bind:class="{ 'activo':  pronunciationType == 'simple' }" 
-                  :active="pronunciationType=='simple'") simple
+            v-model="texto" @keydown.tab="keymonitor")
+          
+          transition(name="fade")
+            div.pronounce-box(v-if="selectedLang=='ENG'")
+              span.pr-text
+              | {{pronunciation}}
+              .uk-flex.uk-flex-right.uk-flex-middle.pronounce-buttoms
+                div.label pronunciation
+                .uk-button-group
+                  button.uk-button.ukbutton-small.pronounce-buttom(
+                    @click="updatePronunciation('IPA')" 
+                    v-bind:class="{ 'activo':  pronunciationType == 'IPA' }" 
+                    :active="pronunciationType=='IPA'") IPA
+                  button.uk-button.ukbutton-small.pronounce-buttom(
+                    @click="updatePronunciation('simple')" 
+                    v-bind:class="{ 'activo':  pronunciationType == 'simple' }" 
+                    :active="pronunciationType=='simple'") simple
 
 </template>
 
 <script>
+import LanguageInput from "@/components/LanguageInput"
 import { mapFields } from "vuex-map-fields";
 
 export default {
+  components:{
+    LanguageInput
+  },
   props: {
     side: {
       type: String,
@@ -43,17 +44,14 @@ export default {
 
   data() {
     return {
-      selectedInner: "AUTO",
-      langs: ["ENG", "ES", "FR", "DE", "IT", "NL", "PL"].map(txt => {
-        return { text: txt, value: txt };
-      })
+     
+      
     };
   },
 
   mounted() {
     window.mystate = this.$store;
     window.ventana = this;
-    this.selectedInner = this.$store.state[this.side];
   },
 
   computed: {
@@ -62,25 +60,26 @@ export default {
       return this.$store.state[this.side];
     },
 
-    fromText: {
+    texto: {
       get() {
         return this.$store.state[this.side + "Text"];
       },
       set(text) {
-        this.$store.commit("updateText", { fromOrTo: "fromText", text });
+        this.$store.commit("updateText", { text });
       }
     },
     activeSide() {
       console.log("cambiado lado activo");
       return this.$store.state.activeSide;
+    },
+
+    pronunciation(){
+      return this.$store.state.pronText
     }
   },
 
+  //TODO: refactor this, we don't need an inner state selectedInner nor a selectedLang watcher, found a better way to accomplish this
   watch: {
-    selectedLang: function(n, _) {
-      this.selectedInner == n;
-    },
-
     activeSide: function(newV, _) {
       console.log("cambiando focus");
       //newV=="from" ? this.$refs.fromArea.$el.focus() : this.$refs.fromArea.blur()
@@ -99,14 +98,7 @@ export default {
       this.$store.commit("updateActiveSide", { side: this.side });
     },
 
-    changeLang(event) {
-      console.log(this.selectedInner);
 
-      this.$store.commit("changeLang", {
-        side: this.side,
-        lang: this.selectedInner
-      });
-    },
 
     keymonitor(event) {
       event.preventDefault();
@@ -118,7 +110,8 @@ export default {
     },
     clearText(){
       //throw "buscame"
-      this.fromText = ""
+      this.$nextTick(()=>this.texto = "")
+      
     }
   }
 };
@@ -138,7 +131,7 @@ export default {
 .pronounce-box {
   background: #ffa726;
   color: #3c3014;
-  font-size: 17px;
+  font-size: 14px;
   padding-top: 8px;
 
   .pr-text {
@@ -175,8 +168,26 @@ export default {
 }
 
 .hidden{
-  display : none;
-  }
+  display:none
+}
+
+//handel animation
+.fade-enter-active, .fade-leave-active {
+  transition: all 0.25s ease-out;
+ 
+}
+
+//final
+.fade-enter-to .fade-leave{
+   transform: rotateX(0deg)
+}
+
+//inicial
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+  transform: rotateX(45deg)
+}
+
 </style>
 
 
