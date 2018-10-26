@@ -36,4 +36,11 @@ export default {
 </script>
 
 <style lang="stylus">
+.lang {
+  margin: 10px 20px;
+}
+
+.transparent-area {
+  font-size: 20px;
+}
 </style>

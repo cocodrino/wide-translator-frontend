@@ -8,32 +8,20 @@
           textarea.uk-textarea.transparent-form.transparent-area(rows="5",
             ref="fromArea" @focus="forceFocus()" 
             v-model="texto" @keydown.tab="keymonitor")
-          
-          transition(name="fade")
-            div.pronounce-box(v-if="selectedLang=='ENG'")
-              span.pr-text
-              | {{pronunciation}}
-              .uk-flex.uk-flex-right.uk-flex-middle.pronounce-buttoms
-                div.label pronunciation
-                .uk-button-group
-                  button.uk-button.ukbutton-small.pronounce-buttom(
-                    @click="updatePronunciation('IPA')" 
-                    v-bind:class="{ 'activo':  pronunciationType == 'IPA' }" 
-                    :active="pronunciationType=='IPA'") IPA
-                  button.uk-button.ukbutton-small.pronounce-buttom(
-                    @click="updatePronunciation('simple')" 
-                    v-bind:class="{ 'activo':  pronunciationType == 'simple' }" 
-                    :active="pronunciationType=='simple'") simple
+          div
+            PronouncingBox(v-if="selectedLang=='EN'")
 
 </template>
 
 <script>
 import LanguageInput from "@/components/LanguageInput"
-import { mapFields } from "vuex-map-fields";
+import PronouncingBox from "@/components/PronouncingBox"
+
 
 export default {
   components:{
-    LanguageInput
+    LanguageInput,
+    PronouncingBox
   },
   props: {
     side: {
@@ -55,7 +43,7 @@ export default {
   },
 
   computed: {
-    ...mapFields(["pronunciationType"]),
+
     selectedLang() {
       return this.$store.state[this.side];
     },
@@ -73,9 +61,7 @@ export default {
       return this.$store.state.activeSide;
     },
 
-    pronunciation(){
-      return this.$store.state.pronText
-    }
+
   },
 
   //TODO: refactor this, we don't need an inner state selectedInner nor a selectedLang watcher, found a better way to accomplish this
@@ -105,9 +91,7 @@ export default {
       this.$store.commit("toggleActiveSide");
       console.log(event.key);
     },
-    updatePronunciation(to) {
-      this.$store.commit("updateProununciation", { to });
-    },
+
     clearText(){
       //throw "buscame"
       this.$nextTick(()=>this.texto = "")
@@ -120,48 +104,8 @@ export default {
 
 
 <style lang="stylus">
-.lang {
-  margin: 10px 20px;
-}
 
-.transparent-area {
-  font-size: 20px;
-}
 
-.pronounce-box {
-  background: #ffa726;
-  color: #3c3014;
-  font-size: 14px;
-  padding-top: 8px;
-
-  .pr-text {
-    padding: 0 4px 5px 4px;
-  }
-}
-
-.pronounce-buttoms {
-  font-size: 10px;
-
-  .label {
-    margin-right: 12px;
-    padding: 0 4px 5px 4px;
-  }
-
-  .pronounce-buttom {
-    background-color: #ad7017;
-    font-size: 13px;
-    color: #fff;
-    border: 1px solid transparent;
-  }
-
-  .pronounce-buttom:hover {
-    background-color: #563e1a;
-  }
-
-  .pronounce-buttom:active {
-    background-color: #563e1a;
-  }
-}
 
 .activo{
   background-color: #563e1a !important;
@@ -171,22 +115,6 @@ export default {
   display:none
 }
 
-//handel animation
-.fade-enter-active, .fade-leave-active {
-  transition: all 0.25s ease-out;
- 
-}
-
-//final
-.fade-enter-to .fade-leave{
-   transform: rotateX(0deg)
-}
-
-//inicial
-.fade-enter, .fade-leave-to {
-  opacity: 0;
-  transform: rotateX(45deg)
-}
 
 </style>
 
