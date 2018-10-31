@@ -1,6 +1,10 @@
-# translator
+# wide translator (frontend)
 
-> My exquisite Nuxt.js project
+> This is the frontend for my translator prototype, is running vuejs,nuxt
+
+
+
+
 
 ## Build Setup
 

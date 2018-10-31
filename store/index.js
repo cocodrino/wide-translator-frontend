@@ -4,6 +4,7 @@ import { getField, updateField } from "vuex-map-fields";
 
 import { Socket } from "phoenix";
 import { saveLangs } from "@/utils/Cookie";
+var _ = require("lodash");
 
 function guid() {
   function s4() {
@@ -27,9 +28,12 @@ function guid() {
   );
 }
 
-const ROOT_SOCKET = "ws://localhost:4000";
+const URL = "trusty-fixed-lunamoth.gigalixirapp.com"
+window.Socket = Socket
+const ROOT_SOCKET = `ws://${URL}/socket`;
 let socket = new Socket(ROOT_SOCKET);
-let chan = socket.channel("connect:" + guid);
+socket.connect()
+let chan = socket.channel("connect:" + guid());
 chan.join();
 
 const createStore = () => {
@@ -38,7 +42,8 @@ const createStore = () => {
       activeSide: "from",
       fromText: "",
       toText: "",
-      pronText: "blah",
+      pronIPA:"",
+      pronSimple:"",
       from: "",
       to: "",
       pronunciationType: "IPA"
@@ -48,20 +53,23 @@ const createStore = () => {
       getField,
       errorLang(state) {
         state.fromLang == state.toLang;
+      },
+      pronText(state){
+        if (state.pronunciationType=="IPA") return state.pronIPA
+        return state.pronSimple
       }
     },
 
     mutations: {
       updateField,
-      saveCookie(state){
-        console.log(`mutation cookie: ${state.from} to ${state.to}`  )
+      saveCookie(state) {
+        console.log(`mutation cookie: ${state.from} to ${state.to}`);
         saveLangs({ from: state.from, to: state.to });
       },
 
       changeLang(state, { side, lang }) {
         console.log("cambiando lenguade de " + side + " a " + lang);
         state[side] = lang;
-        
       },
 
       toggleActiveSide(state) {
@@ -75,7 +83,7 @@ const createStore = () => {
 
       updateText(state, { text }) {
         let side = state.activeSide + "Text";
-        console.log("cambiando texto del lado " + side + " a " + text);
+        //console.log("cambiando texto del lado " + side + " a " + text);
         state[side] = text;
       },
       updateProununciation(state, { to }) {
@@ -90,30 +98,44 @@ const createStore = () => {
           //cargamos la traduccion en el lado no activo
           let lado = state.activeSide == "from" ? "toText" : "fromText";
           state[lado] = payload.translation;
-          state[pronText] = payload[state.pronunciationType];
+          state["pronSimple"] = payload["simple"];
+          state["pronIPA"] = payload["IPA"];
         });
       }
     },
     actions: {
-      changeLang({commit} , payload){
-        console.log("----------------------------------")
-        commit("changeLang",payload)
-        commit("saveCookie")
+      changeLang({ commit }, payload) {
+        console.log("----------------------------------");
+        commit("changeLang", payload);
+        commit("saveCookie");
       },
 
-      translate({ state }) {
-        //enviamos el texto del lado activo
-        let from = state.activeSide;
-        let to = from == "from" ? "to" : "from";
-        let payload = {
-          "from-lang": from,
-          "to-lang": to,
-          "from-content": state[from + "Text"]
-        };
-        console.log("payload");
-        console.log(JSON.stringify(payload));
-        chan.push("translate", payload);
+      updateText({ commit}, { text }) {
+        commit("updateText", { text });
+        //dispatch("translate");
+      },
+
+      translate({ state },{side}) {
+        console.log("dispatched translate");
+        
+          let from = side || state.activeSide;
+          let to = from == "from" ? "to" : "from";
+
+          let fromLang = state[from] == "EN" ? "EN" : state[from];
+          let toLang = state[to] == "EN" ? "EN" : state[to];
+          let texto = state[from + "Text"];
+
+          let payload = {
+            "from-lang": fromLang,
+            "to-lang": toLang,
+            "from-content": texto
+          };
+          console.log("------ enviando por WS payload");
+          console.log(JSON.stringify(payload));
+          chan.push("translate", payload);
       }
+
+      
     }
   });
 };

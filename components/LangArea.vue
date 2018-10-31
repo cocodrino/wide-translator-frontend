@@ -14,12 +14,12 @@
 </template>
 
 <script>
-import LanguageInput from "@/components/LanguageInput"
-import PronouncingBox from "@/components/PronouncingBox"
-
+import LanguageInput from "@/components/LanguageInput";
+import PronouncingBox from "@/components/PronouncingBox";
+let _ = require("lodash");
 
 export default {
-  components:{
+  components: {
     LanguageInput,
     PronouncingBox
   },
@@ -31,10 +31,7 @@ export default {
   },
 
   data() {
-    return {
-     
-      
-    };
+    return {};
   },
 
   mounted() {
@@ -42,8 +39,15 @@ export default {
     window.ventana = this;
   },
 
-  computed: {
+  created() {
+    this.sendWS = _.debounce(
+      () => this.$store.dispatch("translate"),
+      500,
+      { leading: true, trailing: true }
+    );
+  },
 
+  computed: {
     selectedLang() {
       return this.$store.state[this.side];
     },
@@ -53,15 +57,16 @@ export default {
         return this.$store.state[this.side + "Text"];
       },
       set(text) {
-        this.$store.commit("updateText", { text });
+        this.$store.dispatch("updateText", { text });
+        //
+
+        if (text.length > 4) this.sendWS();
       }
     },
     activeSide() {
       console.log("cambiado lado activo");
       return this.$store.state.activeSide;
-    },
-
-
+    }
   },
 
   //TODO: refactor this, we don't need an inner state selectedInner nor a selectedLang watcher, found a better way to accomplish this
@@ -84,18 +89,15 @@ export default {
       this.$store.commit("updateActiveSide", { side: this.side });
     },
 
-
-
     keymonitor(event) {
       event.preventDefault();
       this.$store.commit("toggleActiveSide");
       console.log(event.key);
     },
 
-    clearText(){
+    clearText() {
       //throw "buscame"
-      this.$nextTick(()=>this.texto = "")
-      
+      this.$nextTick(() => (this.texto = ""));
     }
   }
 };
@@ -104,18 +106,13 @@ export default {
 
 
 <style lang="stylus">
-
-
-
-.activo{
+.activo {
   background-color: #563e1a !important;
 }
 
-.hidden{
-  display:none
+.hidden {
+  display: none;
 }
-
-
 </style>
 
 

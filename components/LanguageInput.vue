@@ -8,12 +8,12 @@
 
 <script>
 export default {
-  props:{
-    selectedLang : {
-      type: String,
+  props: {
+    selectedLang: {
+      type: String
     },
-    side : {
-      type:String,
+    side: {
+      type: String
     }
   },
 
@@ -30,6 +30,7 @@ export default {
         side: this.side,
         lang: event.target.value
       });
+      this.$store.dispatch("translate",{side: this.side})
     }
   }
 };

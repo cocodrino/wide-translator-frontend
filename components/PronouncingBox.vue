@@ -22,7 +22,7 @@ export default {
   computed: {
     ...mapFields(["pronunciationType"]),
     pronunciation() {
-      return this.$store.state.pronText;
+      return this.$store.getters.pronText;
     }
   },
   methods: {

@@ -17,4 +17,24 @@
   color:white;
 
  }
+
+ .uk-button-primary {
+    background-color: #ffa726;
+    color: black;
+    border: 1px solid transparent;
+}
+
+.uk-button-primary:active, .uk-button-primary.uk-active {
+    background-color: #ffa726;
+    color: black;
+}
+
+.uk-button-primary:hover, .uk-button-primary:focus {
+    background-color: #b5781e;
+    color: #131313;
+}
+
+  a{
+    color:#ffa726
+  }
 </style>
