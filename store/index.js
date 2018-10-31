@@ -30,7 +30,7 @@ function guid() {
 
 const URL = "trusty-fixed-lunamoth.gigalixirapp.com"
 window.Socket = Socket
-const ROOT_SOCKET = `ws://${URL}/socket`;
+const ROOT_SOCKET = `wss://${URL}/socket`;
 let socket = new Socket(ROOT_SOCKET);
 socket.connect()
 let chan = socket.channel("connect:" + guid());
