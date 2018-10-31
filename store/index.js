@@ -101,6 +101,9 @@ const createStore = () => {
           state["pronSimple"] = payload["simple"];
           state["pronIPA"] = payload["IPA"];
         });
+
+        chan.onError((err)=>console.log("ERROR: "+  err))
+
       }
     },
     actions: {
@@ -115,7 +118,7 @@ const createStore = () => {
         //dispatch("translate");
       },
 
-      translate({ state },{side}) {
+      translate({ state },{side}={side:false}) {
         console.log("dispatched translate");
         
           let from = side || state.activeSide;
