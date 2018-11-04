@@ -28,13 +28,25 @@ function guid() {
   );
 }
 
-const URL = "trusty-fixed-lunamoth.gigalixirapp.com"
-window.Socket = Socket
-const ROOT_SOCKET = `wss://${URL}/socket`;
-let socket = new Socket(ROOT_SOCKET);
-socket.connect()
-let chan = socket.channel("connect:" + guid());
-chan.join();
+var chan;
+
+var socket;
+
+//https://widetranslator.herokuapp.com/
+//const URL = "trusty-fixed-lunamoth.gigalixirapp.com"
+
+function initializeSocket() {
+  console.log("====================================================")
+  const URL = "widetranslator.herokuapp.com";
+  const ROOT_SOCKET = `wss://${URL}/socket`;
+  socket = new Socket(ROOT_SOCKET);
+  socket.connect();
+  chan = socket.channel("connect:" + guid());
+  chan.join();
+  window.chan = chan;
+  window.socket = socket;
+
+}
 
 const createStore = () => {
   return new Vuex.Store({
@@ -42,8 +54,8 @@ const createStore = () => {
       activeSide: "from",
       fromText: "",
       toText: "",
-      pronIPA:"",
-      pronSimple:"",
+      pronIPA: "",
+      pronSimple: "",
       from: "",
       to: "",
       pronunciationType: "IPA"
@@ -54,9 +66,9 @@ const createStore = () => {
       errorLang(state) {
         state.fromLang == state.toLang;
       },
-      pronText(state){
-        if (state.pronunciationType=="IPA") return state.pronIPA
-        return state.pronSimple
+      pronText(state) {
+        if (state.pronunciationType == "IPA") return state.pronIPA;
+        return state.pronSimple;
       }
     },
 
@@ -91,6 +103,7 @@ const createStore = () => {
       },
 
       startloadingTranslation(state) {
+        initializeSocket();
         console.log("esperando mensj");
         chan.on("translate", payload => {
           console.log(JSON.stringify(payload));
@@ -102,8 +115,7 @@ const createStore = () => {
           state["pronIPA"] = payload["IPA"];
         });
 
-        chan.onError((err)=>console.log("ERROR: "+  err))
-
+        chan.onError(err => console.log("ERROR: " + JSON.stringify(err)));
       }
     },
     actions: {
@@ -113,32 +125,30 @@ const createStore = () => {
         commit("saveCookie");
       },
 
-      updateText({ commit}, { text }) {
+      updateText({ commit }, { text }) {
         commit("updateText", { text });
         //dispatch("translate");
       },
 
-      translate({ state },{side}={side:false}) {
+      translate({ state }, { side } = { side: false }) {
         console.log("dispatched translate");
-        
-          let from = side || state.activeSide;
-          let to = from == "from" ? "to" : "from";
 
-          let fromLang = state[from] == "EN" ? "EN" : state[from];
-          let toLang = state[to] == "EN" ? "EN" : state[to];
-          let texto = state[from + "Text"];
+        let from = side || state.activeSide;
+        let to = from == "from" ? "to" : "from";
 
-          let payload = {
-            "from-lang": fromLang,
-            "to-lang": toLang,
-            "from-content": texto
-          };
-          console.log("------ enviando por WS payload");
-          console.log(JSON.stringify(payload));
-          chan.push("translate", payload);
+        let fromLang = state[from] == "EN" ? "EN" : state[from];
+        let toLang = state[to] == "EN" ? "EN" : state[to];
+        let texto = state[from + "Text"];
+
+        let payload = {
+          "from-lang": fromLang,
+          "to-lang": toLang,
+          "from-content": texto
+        };
+        console.log("------ enviando por WS payload");
+        console.log(JSON.stringify(payload));
+        chan.push("translate", payload);
       }
-
-      
     }
   });
 };
