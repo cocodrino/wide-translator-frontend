@@ -6,7 +6,7 @@
         div.uk-margin
           button.hidden(v-shortkey="['ctrl', 'space']" @shortkey="clearText" @click="clearText") clear text
           textarea.uk-textarea.transparent-form.transparent-area(rows="5",
-            ref="fromArea" @focus="forceFocus()" 
+            ref="fromArea" @focus="forceFocus()"
             v-model="texto" @keydown.tab="keymonitor")
           div
             PronouncingBox(v-if="selectedLang=='EN'")
@@ -42,7 +42,7 @@ export default {
   created() {
     this.sendWS = _.debounce(
       () => this.$store.dispatch("translate"),
-      500,
+      50,
       { leading: true, trailing: true }
     );
   },
@@ -66,6 +66,9 @@ export default {
     activeSide() {
       console.log("cambiado lado activo");
       return this.$store.state.activeSide;
+    },
+    isReady(){
+      return this.$store.state.wsReady;
     }
   },
 

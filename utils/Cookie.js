@@ -1,4 +1,4 @@
-var _ = require("lodash")
+var _ = require("lodash");
 
 function setCookie(name,value,days) {
     var expires = "";
@@ -27,8 +27,8 @@ function getLangsFromBrowser(){
     var default_langs = window.navigator.languages.slice(0);
     default_langs.push("EN");
     default_langs.push("ES");
-    
-    let langs= _(default_langs.map(lang => lang.replace(/[^a-z]+/, "")))
+
+    let langs= _(default_langs.map(lang => lang.replace(/[^a-zA-Z]+/, "")))
       .map(lang => {
         let l = lang.toUpperCase();
         return _.includes(["EN", "ES", "FR", "DE", "IT", "NL", "PL"], l) ? l : null;
@@ -36,7 +36,8 @@ function getLangsFromBrowser(){
       .uniq()
       .compact()
       .value();
-    
+
+  console.log("lenguajes son " + langs);
     return {from: langs[0], to: langs[1]}
 }
 

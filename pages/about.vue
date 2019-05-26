@@ -61,12 +61,7 @@
             .uk-form-controls
               textarea.uk-textarea.transparent-form(id="message" rows="5" placeholder="tell me something",v-model="message")
 
-          VueRecaptcha(
-            ref="invisible"
-            @verify="onVerify"
-            @expired="onExpired"
-            sitekey="6Le0HXcUAAAAAMxV9bs3royxWt2OSZNEG2AuPULO"
-          )
+
           button.uk-button.uk-button-primary( type="submit") Send Email
 
       
@@ -74,11 +69,11 @@
 </template>
 
 <script>
-import { VueRecaptcha } from "vue-recaptcha";
+//import { VueRecaptcha } from "vue-recaptcha";
 
 export default {
   components: {
-    VueRecaptcha
+    //VueRecaptcha
   },
   data() {
     return {
