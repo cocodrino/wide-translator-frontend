@@ -36,7 +36,7 @@ const createStore = () => {
     getters: {
       getField,
       errorLang(state) {
-        state.fromLang === state.toLang;
+        return state.fromLang === state.toLang;
       },
       pronText(state) {
         if (state.pronunciationType === "IPA") return state.pronIPA;
@@ -82,13 +82,22 @@ const createStore = () => {
           state.wsReady = true;
         };
 
+        mysocket.onerror = function(e){
+          console.log("error " + e)
+        };
+
+        mysocket.onclose = function (e) {
+          console.log("reconectando" + e);
+          mysocket = initializeSocket();
+        };
+
         mysocket.onmessage = function (e) {
           let payload = JSON.parse(e.data);
           console.log("recibiendo >\n"+JSON.stringify(payload));
 
           //cargamos la traduccion en el lado no activo
           let lado = state.activeSide === "from" ? "toText" : "fromText";
-          state[lado] = payload[lado];
+          state[lado] = payload["toText"];
           state["pronSimple"] = payload["pronSimple"];
           state["pronIPA"] = payload["pronIPA"];
         };
