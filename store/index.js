@@ -78,8 +78,13 @@ const createStore = () => {
         console.log("esperando mensj");
 
         mysocket.onopen = function () {
-          console.log("cambiando estado websocket")
+          console.log("cambiando estado websocket");
           state.wsReady = true;
+
+          setInterval(()=>{
+            mysocket.send("ping");
+            //console.log("sending ping")
+          },5000)
         };
 
         mysocket.onerror = function(e){
@@ -92,6 +97,10 @@ const createStore = () => {
         };
 
         mysocket.onmessage = function (e) {
+          if(e.data==="pong"){
+            //console.log("recibiendo pong");
+            return
+          }
           let payload = JSON.parse(e.data);
           console.log("recibiendo >\n"+JSON.stringify(payload));
 
