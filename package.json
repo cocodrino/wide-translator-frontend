@@ -26,7 +26,7 @@
     "cross-env": "^5.0.1",
     "css-loader": "^1.0.0",
     "node-sass": "^4.9.3",
-    "pug": "^2.0.3",
+    "pug": "^3.0.1",
     "pug-plain-loader": "^1.0.0",
     "sass-loader": "^7.1.0",
     "stylus": "^0.54.5",
